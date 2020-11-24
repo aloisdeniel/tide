@@ -1,0 +1,15 @@
+name: tide
+description: A very thin layer on top of state_notifier and provider to give guidelines when architecturing an application.
+version: 0.1.0
+homepage: https://github.com/aloisdeniel/tide
+
+environment:
+  sdk: '>=2.7.0 <3.0.0'
+
+dependencies:
+  meta: ">= 1.2.0 < 2.0.0"
+  state_notifier: ^0.6.0
+
+dev_dependencies:
+  pedantic: ^1.9.0
+  test: ^1.14.4
