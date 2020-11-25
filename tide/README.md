@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-A very thin layer on top of [state_notifier](https://pub.dev/packages/state_notifier) and [provider](https://pub.dev/packages/provider) to give guidelines when architecturing an application.
+A very thin layer on top of <a href='https://pub.dev/packages/state_notifier'>state_notifier</a> and <a href='https://pub.dev/packages/provider'>provider</a> to give clear guidelines when architecturing an application.
 </p>
 
 <div align="center">
