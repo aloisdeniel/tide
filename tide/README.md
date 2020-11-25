@@ -1,8 +1,14 @@
-![](images/logo.png)
+<div style="text-align:center">
+  <img src="images/logo.png" />
+</div>
 
+<p style="text-align:center">
 A very thin layer on top of [state_notifier](https://pub.dev/packages/state_notifier) and [provider](https://pub.dev/packages/provider) to give guidelines when architecturing an application.
+</p>
 
-![](images/schema.png)
+<div style="text-align:center">
+  <img src="images/schema.png" />
+</div>
 
 ## Quickstart
 
@@ -157,11 +163,63 @@ class Count extends StatelessWidget {
 }
 ```
 
+### Advanced usage
+
+#### Mappers
+
+Since the state is global, its hierarchy may grow rapidly. Reading descendant substate may start to become redundant, and actions filled with `copyWith` calls. To make the code of actions clearer, you can register mappers to allow the dispatching of `Action<Substate>` for scoped execution.
+
+For example, if your state looks something like :
+
+```dart
+class MainState {
+  const MainState({
+    @required this.child,
+  })
+  final ChildState child;
+
+  MainState copyWith({
+    ChildState child,
+  }) => MainState(
+    child: child ?? this.child,
+  );
+}
+
+class ChildState {
+  const ChildState(this.value)
+  final int value;
+}
+```
+
+Then you could have a store that registers a mapper for `ChildState` :
+
+```dart 
+class MyStore extends Store<MainState> {
+  MyStore() : super(initialState: const MainState(child: ChildState(0))) {
+    registerMapper<ChildState>(
+      read: (state) => state.child,
+      writer: (state, substate) => state.copyWith(child: substate),
+    );
+  }
+}
+```
+
+And you're now able to define and dispatch scoped `ChildState` actions into your store :
+
+```dart
+class Increment extends StoreAction<ChildState> {
+  @override
+  Stream<ChildState> execute(StateReader<ChildState> state, Dispatcher<ChildState> dispatch) async* {
+      yield ChildState(state().value + 1);
+  }
+}
+```
+
 ## Q&A
 
 > Why publishing only a few classes and defining them as a new *"state-management"* solution ?
 
-Yes, tide is just a StoreNotifier, but because I copy paste those classes in every one of my projects. And it adds a few guidelines on how to architecture the application, which makes it easier to share.
+Yes, tide is just a StoreNotifier, but I copy paste those classes in every one of my projects. And it adds a few guidelines on how to architecture the application, which makes it easier to share.
 
 > What are the differences with redux ?
 

@@ -4,8 +4,8 @@ import 'state.dart';
 
 class Increment extends StoreAction<CounterState> {
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+      StateReader<CounterState> state, Dispatcher dispatch) async* {
     if (!state().isLoading) {
       yield CounterState(state().value + 1, false);
     }
@@ -14,8 +14,8 @@ class Increment extends StoreAction<CounterState> {
 
 class AddServerValue extends StoreAction<CounterState> {
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+      StateReader<CounterState> state, Dispatcher dispatch) async* {
     if (!state().isLoading) {
       yield CounterState(state().value, true);
       final serverValue = await const ServerClient().getValue();
@@ -29,8 +29,8 @@ class ResetThenAddValueverySecond extends StoreAction<CounterState> {
   final int value;
 
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+      StateReader<CounterState> state, Dispatcher dispatch) async* {
     if (!state().isLoading) {
       yield CounterState(0, true);
       for (var i = 0; i < 5; i++) {
