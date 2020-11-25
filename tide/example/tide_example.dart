@@ -1,18 +1,22 @@
 import 'package:tide/tide.dart';
 
+@immutable
 class CounterState {
   const CounterState(this.value, this.isLoading);
   final int value;
   final bool isLoading;
-}
-
-class CounterStore extends Store<CounterState> {
-  CounterStore() : super(initialState: CounterState(0, false));
 
   @override
-  void onStateChanged(CounterState oldState) {
-    print('State changed from ${oldState.value} to ${state.value}');
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is CounterState &&
+            value == other.value &&
+            isLoading == other.isLoading);
   }
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^ value.hashCode ^ isLoading.hashCode;
 }
 
 class Increment extends StoreAction<CounterState> {

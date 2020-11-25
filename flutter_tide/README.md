@@ -1,39 +1,45 @@
-<div style="text-align:center">
-  <img src="images/logo.png" />
+<div align="center">
+  <img src="https://github.com/aloisdeniel/tide/raw/main/tide/images/logo.png" />
 </div>
 
-<p style="text-align:center">
+<p align="center">
 A very thin layer on top of [state_notifier](https://pub.dev/packages/state_notifier) and [provider](https://pub.dev/packages/provider) to give guidelines when architecturing an application.
 </p>
 
-<div style="text-align:center">
-  <img src="images/schema.png" />
+<div align="center">
+  <img src="https://github.com/aloisdeniel/tide/raw/main/tide/images/schema.png" />
 </div>
 
 ## Quickstart
 
-Define your application state class and its associated `Store`.
+Define your application state class as an immutable definition.
+
+> It is important to have equality comparer implemented for your state object to optimize rebuild. To help with that, you can use the [equatable](https://pub.dev/packages/equatable) or [freezed](https://pub.dev/packages/freezed) packages.
 
 ```dart
 import 'package:tide/tide.dart';
 
+@immutable
 class CounterState {
   const CounterState(this.value, this.isLoading);
   final int value;
   final bool isLoading;
-}
-
-class CounterStore extends Store<CounterState> {
-  CounterStore() : super(initialState: CounterState(0, false));
 
   @override
-  void onStateChanged(CounterState oldState) {
-    print('State changed from ${oldState.value} to ${state.value}');
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other is CounterState &&
+            value == other.value &&
+            isLoading == other.isLoading);
   }
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^ value.hashCode ^ isLoading.hashCode;
 }
 ```
 
-Define a set of `AsyncActions` that will mutate the state from the store when dispatched.
+Define a set of `StoreActions` that will mutate the state from the store when dispatched.
 
 ```dart
 import 'package:tide/tide.dart';
@@ -88,7 +94,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreProvider<CounterState>(
-      createStore: (context) => Store<CounterState>(
+      createStore: (context) => Store(
         initialState: CounterState(0, false),
       ),
       child: MaterialApp(
@@ -164,6 +170,21 @@ class Count extends StatelessWidget {
 ```
 
 ### Advanced usage
+
+#### Custom store
+
+You can subclass the `Store` class if you want to observe callbacks.
+
+```dart
+class CounterStore extends Store<CounterState> {
+  CounterStore() : super(initialState: CounterState(0, false));
+
+  @override
+  void onStateChanged(CounterState oldState) {
+    print('State changed from ${oldState.value} to ${state.value}');
+  }
+}
+```
 
 #### Mappers
 
