@@ -310,4 +310,4 @@ Flutter bloc has a different architecture, where each bloc is representing a por
 
 > Why "tide" ?
 
-Many streams can trigger the tide ... maybe. :)  And it is pronounced almost like "tied" which may represents the idea of having a lot of data aggregater into a single state.
+Many streams can trigger the tide ... maybe. :)  And it is pronounced almost like "tied" which may represents the idea of having a lot of data aggregated into a single state.
