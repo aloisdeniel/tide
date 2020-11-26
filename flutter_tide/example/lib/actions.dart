@@ -1,3 +1,4 @@
+import 'package:example/services.dart';
 import 'package:flutter_tide/flutter_tide.dart';
 
 import 'state.dart';
@@ -5,7 +6,10 @@ import 'state.dart';
 class Increment extends StoreAction<CounterState> {
   @override
   Stream<CounterState> execute(
-      StateReader<CounterState> state, Dispatcher dispatch) async* {
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(state().value + 1, false);
     }
@@ -15,10 +19,14 @@ class Increment extends StoreAction<CounterState> {
 class AddServerValue extends StoreAction<CounterState> {
   @override
   Stream<CounterState> execute(
-      StateReader<CounterState> state, Dispatcher dispatch) async* {
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(state().value, true);
-      final serverValue = await const ServerClient().getValue();
+      final client = services.create<ServerClient>();
+      final serverValue = await client.getValue();
       yield CounterState(state().value + serverValue, false);
     }
   }
@@ -30,7 +38,10 @@ class ResetThenAddValueverySecond extends StoreAction<CounterState> {
 
   @override
   Stream<CounterState> execute(
-      StateReader<CounterState> state, Dispatcher dispatch) async* {
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(0, true);
       for (var i = 0; i < 5; i++) {
@@ -39,13 +50,5 @@ class ResetThenAddValueverySecond extends StoreAction<CounterState> {
       }
       yield CounterState(state().value, false);
     }
-  }
-}
-
-class ServerClient {
-  const ServerClient();
-  Future<int> getValue() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return 128;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:example/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tide/flutter_tide.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return StoreProvider<CounterState>(
       createStore: (context) => Store<CounterState>(
         initialState: CounterState(0, false),
-      ),
+      )..registerService<ServerClient>((state, services) => MockServerClient()),
       child: MaterialApp(
         title: 'Tide Demo',
         theme: ThemeData(

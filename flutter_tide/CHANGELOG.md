@@ -1,3 +1,9 @@
+## 0.4.0
+
+- Added service dependencies.
+- Added service locator.
+
+
 ## 0.2.1
 
 - Improved documentation.

@@ -1,3 +1,5 @@
+import 'package:tide/src/service.dart';
+
 /// Dispatched to a [Store<State>] to update its state by emmiting
 /// values from the [execute] method.
 abstract class StoreAction<State> {
@@ -13,9 +15,12 @@ abstract class StoreAction<State> {
   /// sure to sends up-to-date versions of a new resulting state.
   ///
   /// The [dispatch] allows to trigger new actions execution from the store.
+  ///
+  /// The [service] allows you to instanciate services that may have external logic.
   Stream<State> execute(
     StateReader<State> state,
     Dispatcher dispatch,
+    ServiceLocator services,
   );
 }
 

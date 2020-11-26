@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:tide/src/service.dart';
 
 import 'action.dart';
 
@@ -13,9 +14,17 @@ class MappedStoreAction<State> extends StoreAction<State> {
   final StoreAction subaction;
 
   @override
-  Stream<State> execute(StateReader<State> state, Dispatcher dispatch) {
+  Stream<State> execute(
+    StateReader<State> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) {
     return subaction
-        .execute(() => _mapper.reader(state()), dispatch)
+        .execute(
+          _mapper.reader(state()),
+          dispatch,
+          services,
+        )
         .map((event) => _mapper.writer(state(), event));
   }
 

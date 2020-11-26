@@ -1,6 +1,6 @@
 name: flutter_tide
 description: A very thin layer on top of state_notifier and provider to give guidelines when architecturing an application.
-version: 0.2.1
+version: 0.4.0
 homepage: https://github.com/aloisdeniel/tide
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   provider: ^4.3.2+2
   state_notifier: ^0.6.0
   flutter_state_notifier: ^0.6.1
-  tide: ^0.2.1
+  tide: ^0.4.0
   flutter:
     sdk: flutter
 

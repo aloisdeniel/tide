@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:state_notifier/state_notifier.dart';
+import 'package:tide/src/service.dart';
 
 import 'action.dart';
 import 'mapping.dart';
@@ -12,10 +13,14 @@ class Store<State> extends StateNotifier<State> {
   /// Create a new store from an [initialState].
   Store({
     @required State initialState,
-  }) : super(initialState);
+  }) : super(initialState) {
+    _serviceLocator = ServiceLocator(() => state);
+  }
 
   /// Mappers are used to convert `StoreAction<[T]>` to `StoreAction<State>`.
   final Map<Type, Mapper> _mappers = {};
+
+  ServiceLocator _serviceLocator;
 
   /// Dispatch an action into the store.
   ///
@@ -35,7 +40,8 @@ class Store<State> extends StateNotifier<State> {
     if (action.stateType == State) {
       try {
         onDispatchedAction(action);
-        await for (var newState in action.execute(() => state, dispatch)) {
+        await for (var newState
+            in action.execute(() => state, dispatch, _serviceLocator)) {
           state = newState;
           onStateChanged(state);
         }
@@ -59,6 +65,14 @@ class Store<State> extends StateNotifier<State> {
       reader: reader,
       writer: writer,
     );
+  }
+
+  /// Registering an external service.
+  ///
+  /// Services may be instantiated from action execute method when then rely on external systems.
+  void registerService<Service>(
+      Service Function(State state, ServiceLocator services) builder) {
+    _serviceLocator.register<Service, State>(builder);
   }
 
   /// The [onDispatchFailed] method is called if an exception occurs during action execution.

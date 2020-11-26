@@ -46,8 +46,11 @@ import 'package:tide/tide.dart';
 
 class Increment extends StoreAction<CounterState> {
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(state().value + 1, false);
     }
@@ -56,8 +59,11 @@ class Increment extends StoreAction<CounterState> {
 
 class AddServerValue extends StoreAction<CounterState> {
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(state().value, true);
       final serverValue = await ServerClient().getValue();
@@ -71,8 +77,11 @@ class ResetThenAddValueverySecond extends StoreAction<CounterState> {
   final int value;
 
   @override
-  Stream<CounterState> execute(StateReader<CounterState> state,
-      Dispatcher<CounterState> dispatch) async* {
+  Stream<CounterState> execute(
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
     if (!state().isLoading) {
       yield CounterState(0, true);
       for (var i = 0; i < 5; i++) {
@@ -230,8 +239,46 @@ And you're now able to define and dispatch scoped `ChildState` actions into your
 ```dart
 class Increment extends StoreAction<ChildState> {
   @override
-  Stream<ChildState> execute(StateReader<ChildState> state, Dispatcher<ChildState> dispatch) async* {
+  Stream<ChildState> execute(
+    StateReader<ChildState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
       yield ChildState(state().value + 1);
+  }
+}
+```
+
+#### Service locator
+
+Sometime you may depends on an external system (for example a web API client, or a system service). The locator allows your to register service builders to offers access to these services from your actions.
+
+First, register your service at the store level :
+
+```dart
+class MyStore extends Store<MainState> {
+  MyStore() : super(initialState: const MainState(child: ChildState(0))) {
+    registerService<ServiceClient>((state, services) => HttpServiceClient(host: state.config.host));
+  }
+}
+```
+
+The `services` property now gives you access to your `ServiceClient` instance :
+
+```dart
+class AddServerValue extends StoreAction<CounterState> {
+  @override
+  Stream<CounterState> execute(
+    StateReader<CounterState> state,
+    Dispatcher dispatch,
+    ServiceLocator services,
+  ) async* {
+    if (!state().isLoading) {
+      yield CounterState(state().value, true);
+      final service = services.create<ServiceClient>();
+      final serverValue = await service.getValue();
+      yield CounterState(state().value + serverValue, false);
+    }
   }
 }
 ```
