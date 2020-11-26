@@ -298,7 +298,7 @@ Yes, tide is just a StoreNotifier, but I copy paste those classes in every one o
 
 > What are the differences with redux ?
 
-Redux has almost the same concepts than tide. But I've founded that it introduced too much boilerplate by having asynchronous (*Thunks*) and synchronous actions. Moreover most of the logic was splitted between synchronous reducers and asynchronous thunks. I like more the usage of `Streams` and generators for emitting multiple updates (like in flutter_bloc) instead of a setter too.
+Redux has almost the same concepts than tide. But I've founded that it introduced too much boilerplate by having asynchronous (*Thunks*) and synchronous actions. Therefore most of the logic was splitted between synchronous reducers and asynchronous thunks. I like more the usage of `Streams` and generators for emitting multiple updates (like in flutter_bloc) instead of a setter too.
 
 > Why not simply using a StateNotifier with methods instead of actions ?
 
@@ -306,4 +306,8 @@ Since I like the idea of having a single state (having a single state for the ap
 
 > What are the differences with flutter_bloc ?
 
-FLutter bloc has a different architecture, where a multiple blocs are representing portions of the logic where events (Actions) are filtered in. It is not ideal when working with a single state.
+Flutter bloc has a different architecture, where each bloc is representing a portion of the logic where events are filtered in to mutate this state. It is not ideal when working with a single state.
+
+> Why "tide" ?
+
+Many streams can trigger the tide ... maybe. :)  And it is pronounced almost like "tied" why representes the idea of having a single state.
