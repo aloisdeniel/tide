@@ -1,3 +1,15 @@
+## 0.6.4
+
+- Async file getter for JSON file persistence.
+
+## 0.5.1
+
+- Added JSON file persistence.
+
+## 0.5.0
+
+- Added persistence.
+
 ## 0.4.0
 
 - Added service dependencies.

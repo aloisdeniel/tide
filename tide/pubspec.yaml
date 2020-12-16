@@ -1,6 +1,6 @@
 name: tide
 description: A very thin layer on top of state_notifier and provider to give guidelines when architecturing an application.
-version: 0.4.0
+version: 0.6.4
 homepage: https://github.com/aloisdeniel/tide
 
 environment:

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:example/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tide/flutter_tide.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'actions.dart';
 import 'state.dart';
@@ -13,11 +16,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<CounterState>(
-      createStore: (context) => Store<CounterState>(
+    return PersistedStoreProvider<CounterState>(
+      persistence: JsonFilePersistence(
+        converter: JsonConverter(
+          fromJson: (value) => CounterState(value, false),
+          toJson: (value) => value.value,
+        ),
+        file: () async {
+          final directory = await getApplicationDocumentsDirectory();
+          return File(directory.path + '/state');
+        },
+      ),
+      initialStore: (context) => Store<CounterState>(
         initialState: CounterState(0, false),
-      )..registerService<ServerClient>((state, services) => MockServerClient()),
-      child: MaterialApp(
+      ),
+      storeInitializer: (context, store) => store
+        ..registerService<ServerClient>(
+            (state, services) => MockServerClient()),
+      restoringBuilder: (context) => SizedBox(),
+      restoredbuilder: (context) => MaterialApp(
         title: 'Tide Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,

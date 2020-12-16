@@ -1,10 +1,9 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_state_notifier/flutter_state_notifier.dart';
-import 'package:state_notifier/state_notifier.dart';
 import 'package:tide/tide.dart';
 
-class StoreProvider<State> extends StatelessWidget {
+class StoreProvider<S> extends StatelessWidget {
   /// Creates a [StoreProvider] instance and exposes both the [Store]
   /// and its [Store.state] using `provider`.
   ///
@@ -17,7 +16,6 @@ class StoreProvider<State> extends StatelessWidget {
     Key key,
     @required this.createStore,
     this.lazy,
-    this.builder,
     this.child,
   })  : this.state = null,
         assert(createStore != null),
@@ -25,18 +23,9 @@ class StoreProvider<State> extends StatelessWidget {
           key: key,
         );
 
-  /// Exposes an existing [Store] and its [state].
-  ///
-  /// This will not call [StateNotifier.dispose] when the provider is removed
-  /// from the widget tree.
-  ///
-  /// It will also not setup [LocatorMixin].
-  ///
-  /// `value` cannot be `null`.
   const StoreProvider.state({
     Key key,
     @required this.state,
-    this.builder,
     this.child,
   })  : this.lazy = false,
         this.createStore = null,
@@ -45,14 +34,13 @@ class StoreProvider<State> extends StatelessWidget {
           key: key,
         );
 
-  final Create<Store<State>> createStore;
+  final Create<Store<S>> createStore;
   final bool lazy;
-  final TransitionBuilder builder;
   final Widget child;
-  final Store<State> state;
+  final Store<S> state;
 
   /// Dispatch the [action] into the declared [Store].
-  static void dispatch(BuildContext context, StoreAction action) {
+  static void dispatch<S>(BuildContext context, StoreAction<S> action) {
     final dispatch = Provider.of<Dispatcher>(context, listen: false);
     assert(dispatch != null, 'No store registered in tree');
     dispatch(action);
@@ -62,7 +50,7 @@ class StoreProvider<State> extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = Builder(
       builder: (context) {
-        final store = context.watch<Store<State>>();
+        final store = context.watch<Store<S>>();
         return Provider<Dispatcher>.value(
           value: store.dispatch,
           child: this.child,
@@ -71,18 +59,16 @@ class StoreProvider<State> extends StatelessWidget {
     );
 
     if (state != null) {
-      return StateNotifierProvider<Store<State>, State>.value(
+      return StateNotifierProvider<Store<S>, S>.value(
         key: key,
         value: state,
-        builder: builder,
         child: child,
       );
     }
 
-    return StateNotifierProvider<Store<State>, State>(
+    return StateNotifierProvider<Store<S>, S>(
       key: key,
       create: createStore,
-      builder: builder,
       lazy: lazy,
       child: child,
     );
@@ -90,7 +76,7 @@ class StoreProvider<State> extends StatelessWidget {
 }
 
 extension StoreProviderExtension on BuildContext {
-  void dispatch<State>(StoreAction<State> action) {
-    StoreProvider.dispatch(this, action);
+  void dispatch<S>(StoreAction<S> action) {
+    StoreProvider.dispatch<S>(this, action);
   }
 }

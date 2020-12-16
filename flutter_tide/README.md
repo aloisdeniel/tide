@@ -290,6 +290,38 @@ class AddServerValue extends StoreAction<CounterState> {
 }
 ```
 
+#### Persistence layer
+
+Tide provides an easy way to persist your state between application session.
+
+Use the `PersistedStoreProvider` to automatically save the state to a `Persistence` storage.
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return PersistedStoreProvider<CounterState>(
+    persistence: JsonFilePersistence(
+      converter: JsonConverter(
+        fromJson: (value) => CounterState(value, false),
+        toJson: (value) => value.value,
+      ),
+      file: () async {
+        final directory = await getApplicationDocumentsDirectory();
+        return File(path.join(directory.path,'/state'));
+      },
+    ),
+    initialStore: (context) => Store<CounterState>(
+      initialState: CounterState(0, false),
+    ),
+    storeInitializer: (context, store) => store
+      ..registerService<ServerClient>(
+          (state, services) => MockServerClient()),
+    restoringBuilder: (context) => Loader(),
+    restoredbuilder: (context) => CounterApplication(),
+  );
+}
+```
+
 ## Q&A
 
 > Why publishing only a few classes and defining them as a new *"state-management"* solution ?
